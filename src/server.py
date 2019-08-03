@@ -1,3 +1,5 @@
+from route.book import book_blueprint
+from route.common import common_blueprint
 from flask import Flask
 from flask.ext.cors import CORS
 
@@ -17,10 +19,8 @@ CORS(
     headers=['Content-Type', 'X-Requested-With', 'Authorization']
 )
 
-from route.common import common_blueprint
 server.register_blueprint(common_blueprint)
 
-from route.book import book_blueprint
 server.register_blueprint(book_blueprint)
 
 

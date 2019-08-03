@@ -3,7 +3,6 @@ from datetime import datetime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from flask_validator import ValidateInteger, ValidateISBN
 
 
 from .abc import db, BaseModel
@@ -33,9 +32,11 @@ class Book(db.Model, BaseModel, Base):
         self._country = country
         self._release_date = release_date
         self._authors = authors
+
     @hybrid_property
     def _name(self):
         return self.name
+
     @_name.setter
     def set_name(self, name):
         self.name = name
@@ -43,6 +44,7 @@ class Book(db.Model, BaseModel, Base):
     @hybrid_property
     def _isbn(self):
         return self.isbn
+
     @_isbn.setter
     def set_isbn(self, isbn):
         self.isbn = isbn
@@ -50,6 +52,7 @@ class Book(db.Model, BaseModel, Base):
     @hybrid_property
     def _number_of_pages(self):
         return self.number_of_pages
+
     @_number_of_pages.setter
     def set_number_of_pages(self, number_of_pages):
         self.number_of_pages = number_of_pages
@@ -57,6 +60,7 @@ class Book(db.Model, BaseModel, Base):
     @hybrid_property
     def _publisher(self):
         return self.publisher
+
     @_publisher.setter
     def set_publisher(self, publisher):
         self.publisher = publisher
@@ -64,6 +68,7 @@ class Book(db.Model, BaseModel, Base):
     @hybrid_property
     def _country(self):
         return self.country
+
     @_country.setter
     def set_country(self, country):
         self.country = country
@@ -72,6 +77,7 @@ class Book(db.Model, BaseModel, Base):
     def _release_date(self):
 
         return self.release_date.strftime("%Y-%m-%d")
+
     @_release_date.setter
     def set_release_date(self, release_date):
         release_date = datetime.strptime(release_date, "%Y-%m-%d").date()
@@ -80,28 +86,27 @@ class Book(db.Model, BaseModel, Base):
     @hybrid_property
     def _authors(self):
         return [author.name for author in self.authors]
+
     @_authors.setter
     def set_authors(self, authors):
         self.authors = []
         for author in authors:
-            print Author
             author_obj = Author.query.filter_by(name=author).first()
             if author_obj is None:
                 author_obj = Author(name=author)
             self.authors.append(author_obj)
 
-
     def update(self, patch_data):
         for attr_name, value in patch_data.iteritems():
             if hasattr(self, attr_name):
                 setattr(self, "_{:s}".format(attr_name), value)
+
     def delete(self):
         self._authors = []
         db.session.add(self)
         db.session.commit()
         db.session.delete(self)
         db.session.commit()
-    
 
     def create(self):
         db.session.add(self)
@@ -118,14 +123,10 @@ class Book(db.Model, BaseModel, Base):
             "release_date": self._release_date,
             "authors": self._authors
         }
+
     @classmethod
     def find_by_id(klass, id):
         return klass.query.filter_by(id=id).first()
-
-    @classmethod
-    def __declare_last__(cls):
-        # ValidateISBN(cls.isbn)
-        ValidateInteger(Book.number_of_pages)
 
 
 class Author(db.Model, BaseModel, Base):

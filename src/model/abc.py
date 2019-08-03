@@ -39,10 +39,10 @@ class BaseModel():
             for column, value in self.__dict__.items()
             if column not in self.print_filter
         })
+
     @classmethod
     def query_db(klass, session, **kwargs):
         q = session.query(klass)
         for k, v in kwargs.items():
-            print k,v
-            q = q.filter(getattr(klass, k).in_(v)) 
+            q = q.filter(getattr(klass, k).in_(v))
         return q.all()

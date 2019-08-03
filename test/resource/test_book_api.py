@@ -48,10 +48,10 @@ class TestBookPatchAPI(object):
                 return None
         monkeypatch.setattr(Book, "find_by_id", MockBook.find_by_id)
 
-        with pytest.raises(BadRequest) as ex:
-            book = BookAPI().patch(1)
-
-        assert str(ex.value) == '400: Bad Request'
+        with server.test_request_context('/api/v1/books/1', data=json.dumps({'name': 'new test book'}), method="'PATCH'"):
+            with pytest.raises(BadRequest) as ex:
+                book = BookAPI().patch(1)
+            assert str(ex.value) == '400: Bad Request'
 
     def test_update_book(self, monkeypatch):
         book_model = Mock()
@@ -66,12 +66,12 @@ class TestBookPatchAPI(object):
         with server.test_request_context('/api/v1/books/1', data=json.dumps({'name': 'new test book'}), method="'PATCH'"):
             book = BookAPI().patch(1)
 
-        book_model.update.assert_called_with({u'name': u'new test book'})
-        assert book == {
-            "status_code": 200,
-            "status": "success",
-            "data": {'name': 'test book'}
-        }
+            book_model.update.assert_called_with({u'name': u'new test book'})
+            assert book == {
+                "status_code": 200,
+                "status": "success",
+                "data": {'name': 'test book'}
+            }
 
 
 class TestBookDeleteAPI(object):

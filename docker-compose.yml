@@ -7,7 +7,7 @@ server:
   links:
    - db
   volumes:
-    - /Users/viveksoundrapandi/Desktop/2019/pythontest/flask-boilerplate/:/app/books
+    - /Users/viveksoundrapandi/Desktop/2019/pythontest/book_app/:/app/books
   ports:
     - "5000:5000"
   environment:
