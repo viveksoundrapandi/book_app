@@ -3,15 +3,15 @@ server:
   dockerfile: ./Dockerfile
   working_dir: /app/books
   volumes:
-    - .:/app
+    - .:/app/books
   links:
    - db
-  volumes:
-    - /Users/viveksoundrapandi/Desktop/2019/pythontest/book_app/:/app/books
+  # volumes:
+  #   - /Users/viveksoundrapandi/Desktop/2019/pythontest/book_app/:/app/books
   ports:
     - "5000:5000"
   environment:
-    PYTHONPATH: $PYTHONPATH:/app/books/src
+    PYTHONPATH: $PYTHONPATH:/app/books/
   command: python src/server.py
 
 db:
