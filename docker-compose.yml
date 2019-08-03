@@ -1,0 +1,19 @@
+server:
+  build: .
+  dockerfile: ./Dockerfile
+  working_dir: /app/books
+  volumes:
+    - .:/app
+  links:
+   - db
+  volumes:
+    - /Users/viveksoundrapandi/Desktop/2019/pythontest/flask-boilerplate/:/app/books
+  ports:
+    - "5000:5000"
+  environment:
+    PYTHONPATH: $PYTHONPATH:/app/books/src
+  command: python src/server.py
+
+db:
+  image: postgres:9.4
+  restart: always
