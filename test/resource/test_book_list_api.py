@@ -21,9 +21,9 @@ class TestBookListGetAPI(object):
 
         class MockBook:
             @classmethod
-            def query_db(self, session, **kwargs):
+            def find_by(self, session, **kwargs):
                 return [book_model, book_model2]
-        monkeypatch.setattr(Book, "query_db", MockBook.query_db)
+        monkeypatch.setattr(Book, "find_by", MockBook.find_by)
 
         with server.test_request_context('/api/v1/books/', data=json.dumps({}), method="'GET'"):
             book = BookListAPI().get()
@@ -42,9 +42,9 @@ class TestBookListGetAPI(object):
 
         class MockBook:
             @classmethod
-            def query_db(self, session, **kwargs):
+            def find_by(self, session, **kwargs):
                 return [book_model, book_model2]
-        monkeypatch.setattr(Book, "query_db", MockBook.query_db)
+        monkeypatch.setattr(Book, "find_by", MockBook.find_by)
 
         with server.test_request_context('/api/v1/books/', data=json.dumps({'name': 'test'}), method="'GET'"):
             book = BookListAPI().get()
@@ -58,9 +58,9 @@ class TestBookListGetAPI(object):
     def test_get_all_books_no_result(self, monkeypatch):
         class MockBook:
             @classmethod
-            def query_db(self, session, **kwargs):
+            def find_by(self, session, **kwargs):
                 return []
-        monkeypatch.setattr(Book, "query_db", MockBook.query_db)
+        monkeypatch.setattr(Book, "find_by", MockBook.find_by)
 
         with server.test_request_context('/api/v1/books/', data=json.dumps({}), method="'GET'"):
             book = BookListAPI().get()

@@ -1,14 +1,22 @@
+from datetime import datetime
 import config
 
 
 class IceFireApiService(object):
     SERVICE_PARAMS_MAP = {
-        "name": "name"
+        "name": "name",
     }
-    BOOK_ATTRS = ("name", "isbn", "authors", "number_of_pages",
-                  "publisher", "country", "release_date")
+    
 
     def __init__(self, http_client):
+        self.BOOK_ATTRS = {"name": ("name", self._format_none),
+                  "isbn": ("isbn", self._format_none),
+                  "authors": ("authors", self._format_none),
+                  "number_of_pages": ("numberOfPages", self._format_none),
+                  "publisher": ("publisher", self._format_none),
+                  "country": ("country", self._format_none),
+                  "release_date": ("released", self._format_date)
+                  }
         self._http_client = http_client
         return super(IceFireApiService, self).__init__()
 
@@ -23,6 +31,12 @@ class IceFireApiService(object):
     def _get_marshalled_books(self, books):
         marshalled_books = []
         for book in books:
-            marshalled_books.append({book_attr: book.get(
-                book_attr) for book_attr in self.BOOK_ATTRS})
+            marshalled_books.append({internal_attr_name: book_formatters[1](book.get(
+                book_formatters[0])) for internal_attr_name, book_formatters in self.BOOK_ATTRS.iteritems()})
         return marshalled_books
+
+    def _format_none(self, data):
+        return data
+
+    def _format_date(self, date):
+        return datetime.strptime(date, "%Y-%m-%dT00:00:00").strftime("%Y-%m-%d")

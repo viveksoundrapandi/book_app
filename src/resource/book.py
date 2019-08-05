@@ -75,10 +75,11 @@ class BookListAPI(Resource):
         Param('name', GET, str, required=False),
         Param('publisher', GET, str, required=False),
         Param('release_date', GET, str, required=False, rules=[RELEASE_DATE]),
-        Param('country', GET, str, required=False)
+        Param('country', GET, str, required=False),
+        Param('year', GET, int, required=False)
     )
     def get(self, *args):
-        books = Book.query_db(db.session, **request.args)
+        books = Book.find_by(db.session, **request.args)
         return {
             "status_code": 200,
             "status": "success",

@@ -33,8 +33,14 @@ docker-compose run -d server
 ## Run Tests
 To run tests:
 ```
+#Run only tests
 docker-compose run --rm server pytest -vvv
+#Run tests + coverage
+docker-compose run --rm server pytest --cov=src --cov-report html test/
 ```
+
+## Coverage
+Coverage reports are run using pytest and exported as HTML files inside htmlcov/ directory(For easy access)
 
 ## Accessing containers
 ```

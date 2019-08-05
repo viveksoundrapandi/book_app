@@ -21,11 +21,33 @@ class TestIceFireApiService(object):
         assert ice_fire.get_books({}) == []
 
     def test_books_with_extra_attributes(self, http_client_fixture):
-        http_client_fixture.get.return_value = [{"name":"test book", "extra_param":"extra", 'publisher': None, 'isbn': None, 'name': 'test book', 'country': None, 'release_date': None, 'number_of_pages': None, 'authors': None}]
+        book_external_service_response = [
+            {
+                "url": "https://www.anapioficeandfire.com/api/books/1",
+                "name": "A Game of Thrones",
+                "isbn": "978-0553103540",
+                "authors": [
+                    "George R. R. Martin"
+                ],
+                "numberOfPages": 694,
+                "publisher": "Bantam Books",
+                "country": "United States",
+                "mediaType": "Hardcover",
+                "released": "1996-08-01T00:00:00",
+                "characters": [
+                    "https://www.anapioficeandfire.com/api/characters/2"
+                ],
+                "povCharacters": [
+                    "https://www.anapioficeandfire.com/api/characters/148"
+
+                ]
+            }
+        ]
+        book_sanitized_response = [{'publisher': 'Bantam Books', 'isbn': '978-0553103540', 'name': 'A Game of Thrones', 'country': 'United States', 'release_date': '1996-08-01', 'number_of_pages': 694, 'authors': ['George R. R. Martin']}]
+        http_client_fixture.get.return_value = book_external_service_response
 
         ice_fire = IceFireApiService(http_client_fixture)
-
-        assert ice_fire.get_books({}) == [{'publisher': None, 'isbn': None, 'name': 'test book', 'country': None, 'release_date': None, 'number_of_pages': None, 'authors': None}]
+        assert ice_fire.get_books({}) == book_sanitized_response
 
     def test_books_search_with_params(self, http_client_fixture):
         http_client_fixture.get.return_value = []

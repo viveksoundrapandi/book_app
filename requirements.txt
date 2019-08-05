@@ -21,3 +21,4 @@ SQLAlchemy==0.9.8
 Werkzeug==0.10.1
 pytest
 flask-request-validator==2.1.0
+pytest-cov==2.7.1

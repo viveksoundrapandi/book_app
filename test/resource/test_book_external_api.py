@@ -1,37 +1,60 @@
 from pytest import fixture, mark
 from mock import Mock
+import json
+from server import server
 
-from model import Book
-from resource.book import BookAPI
+from resource.book import BookExternalAPI
+import wiring
+from services.ice_fire_api_service import IceFireApiService
 
-@fixture()
-def class_fixture():
-    return
-@mark.usefixtures("class_fixture")
+
 class TestBookAPI(object):
 
-    
-    def test_get_book(self, monkeypatch):
-        book_model = Mock()
-        book_model.json.return_value = {'name':'test book'}
-        class MockBook:
-            @classmethod
-            def find_by_id(klass, id):
-                return book_model
-        monkeypatch.setattr(Book, "find_by_id", MockBook.find_by_id)
+    def test_get_external_book(self, monkeypatch):
+        book_sanitized_response = {
+            "status_code": 200,
+            "status": "success",
+            "data": [
+                {
+                    "name": "A Game of Thrones",
+                    "isbn": "978-0553103540",
+                    "authors": [
+                        "George R. R. Martin"
+                    ],
+                    "number_of_pages": 694,
+                    "publisher": "Bantam Books",
+                    "country": "United States",
+                    "release_date": "1996-08-01"
+                },
+                {
+                    "name": "A Clash of Kings",
+                    "isbn": "978-0553108033",
+                    "authors": [
+                        "George R. R. Martin"
+                    ],
+                    "number_of_pages": 768,
+                    "publisher": "Bantam Books",
+                    "country": "United States",
+                    "release_date": "1999-02-02"
+                }
+            ]
+        }
+        
+        ice_fire_service = Mock()
+        ice_fire_service.return_value = book_sanitized_response
+        monkeypatch.setattr(IceFireApiService, "get_books", ice_fire_service)
+        with server.test_request_context('/api/external-books?name=A Game of Thrones', data=json.dumps({}), method="'GET'"):
+            book = BookExternalAPI().get()
+        assert book == {'status': 'success',
+                        'status_code': 200, 'data': book_sanitized_response}
 
-        book = BookAPI().get(1)
-
-        assert book == {'status': 'success', 'status_code': 200, 'data':{'name':'test book'}}
-
-    def test_get_book_invalid_id(self, monkeypatch):
-        class MockBook:
-            @classmethod
-            def find_by_id(klass, id):
-                return None
-        monkeypatch.setattr(Book, "find_by_id", MockBook.find_by_id)
-
-        book = BookAPI().get(1)
-
-        assert book == {'status': 'success', 'status_code': 200, 'data':{}}
-    
+    def test_get_external_book_empty_response(self, monkeypatch):
+        book_sanitized_response = []
+        
+        ice_fire_service = Mock()
+        ice_fire_service.return_value = book_sanitized_response
+        monkeypatch.setattr(IceFireApiService, "get_books", ice_fire_service)
+        with server.test_request_context('/api/external-books?name=A Game of Thrones', data=json.dumps({}), method="'GET'"):
+            book = BookExternalAPI().get()
+        assert book == {'status': 'success',
+                        'status_code': 200, 'data': []}

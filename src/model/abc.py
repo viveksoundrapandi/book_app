@@ -44,5 +44,6 @@ class BaseModel():
     def query_db(klass, session, **kwargs):
         q = session.query(klass)
         for k, v in kwargs.items():
-            q = q.filter(getattr(klass, k).in_(v))
-        return q.all()
+            if hasattr(klass, k):
+                q = q.filter(getattr(klass, k).in_(v))
+        return q

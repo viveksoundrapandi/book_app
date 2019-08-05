@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import extract
 
 
 from .abc import db, BaseModel
@@ -24,6 +25,10 @@ class Book(db.Model, BaseModel, Base):
     country = db.Column(db.String(120))
     release_date = db.Column(db.Date)
 
+    CUSTOM_FIND_BYS = {
+            "year": "_find_by_year"
+        }
+
     def __init__(self, name, isbn, number_of_pages, publisher, country, release_date, authors):
         self._name = name
         self._isbn = isbn
@@ -32,6 +37,7 @@ class Book(db.Model, BaseModel, Base):
         self._country = country
         self._release_date = release_date
         self._authors = authors
+        
 
     @hybrid_property
     def _name(self):
@@ -123,10 +129,27 @@ class Book(db.Model, BaseModel, Base):
             "release_date": self._release_date,
             "authors": self._authors
         }
-
+    @classmethod
+    def find_by(klass, session, **kwargs):
+        default_attrs = {}
+        custom_attrs = {}
+        for attr, value in kwargs.iteritems():
+            if hasattr(klass, attr):
+                default_attrs[attr] = value
+            else:
+                custom_attrs[attr] = value
+        res = Book.query_db(session, **default_attrs)
+        for custom_attr, value in custom_attrs.iteritems():
+            if klass.CUSTOM_FIND_BYS.get(custom_attr):
+                res = getattr(klass, klass.CUSTOM_FIND_BYS[custom_attr])(res, value)
+        return res.all()
     @classmethod
     def find_by_id(klass, id):
         return klass.query.filter_by(id=id).first()
+
+    @classmethod
+    def _find_by_year(klass, query_set, year):
+        return query_set.filter(extract('year', klass.release_date) >= year[0])
 
 
 class Author(db.Model, BaseModel, Base):

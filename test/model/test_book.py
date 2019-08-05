@@ -61,6 +61,13 @@ class TestBook(object):
 
         assert book.json() == {'publisher': 'RR Martin', 'isbn': '1', 'name': 'GOT', 'authors': [u'vivek'], 'country': 'UK', 'release_date': '2017-10-12', 'number_of_pages': 3, 'id': None}
 
+    def test_find_book_by_year(self, book_fixture, monkeypatch):
+        book = Book(**book_fixture)
+
+        Book.find_by(db.session, **{"year":"2018"})
+        print book.json()
+        assert book.json() == {'publisher': 'RR Martin', 'isbn': '1', 'name': 'GOT', 'authors': [u'vivek'], 'country': 'UK', 'release_date': '2017-10-12', 'number_of_pages': 3, 'id': None}
+
     # def test_delete(self, book_fixture, monkeypatch):
     #     book = Book(**book_fixture)
     #     book.delete()
