@@ -15,7 +15,7 @@ book_server runs in port 5000 and the same is exposed outside. Kindly ensure no 
 
 ## SetUp
 
-To build from begining:
+To build from begining:(preferably latest version of docker)
 
 ```
 # build the images
