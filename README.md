@@ -42,6 +42,9 @@ docker-compose run --rm server pytest --cov=src --cov-report html test/
 ## Coverage
 Coverage reports are run using pytest and exported as HTML files inside htmlcov/ directory(For easy access)
 
+## Integration
+All endpoints are tested via postman and the collection is added to the repository for easy getting started
+
 ## Accessing containers
 ```
 docker exec -it book_db_1 psql -Upostgres
