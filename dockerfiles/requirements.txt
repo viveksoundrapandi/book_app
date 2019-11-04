@@ -15,7 +15,7 @@ marshmallow==1.2.2
 mock==1.0.1
 psycopg2==2.8.3
 pytz==2014.10
-requests==2.3.0
+requests==2.20.0
 six==1.9.0
 SQLAlchemy==0.9.8
 Werkzeug==0.15.3
